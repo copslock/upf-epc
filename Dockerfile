@@ -65,7 +65,8 @@ RUN ./build.py bess && \
     cp bin/bessd /bin && \
     mkdir -p /opt/bess && \
     cp -r bessctl pybess /opt/bess && \
-    cp -a core/pb /pb
+    cp -a core/pb /pb && \
+    cp -a protobuf /protobuf
 
 # Stage pip: compile psutil
 FROM python:2.7-slim AS pip
@@ -121,7 +122,8 @@ RUN apt-get update && \
 COPY --from=cpiface-build /bin/zmq-cpiface /bin
 
 
-# Stage binaries: dummy stage for collecting binaries
-FROM scratch as binaries
+# Stage binaries: dummy stage for collecting artifacts
+FROM scratch as artifacts
 COPY --from=bess /bin/bessd /
 COPY --from=cpiface /bin/zmq-cpiface /
+COPY --from=bess-build /protobuf /protobuf
